@@ -336,6 +336,8 @@ async function applyConfig(argv) {
   config.name = config.name || DEFAULT_NAME;
   config.stage = argv.stage || config.stage || DEFAULT_STAGE;
   config.region = argv.region || config.region || DEFAULT_REGION;
+  config.permissionsBoundary =
+    argv.permissionsBoundaryArn || config.permissionsBoundaryArn;
 
   return config;
 }

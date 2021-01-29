@@ -112,7 +112,12 @@ async function deployDebugStack(argv, cliInfo, config) {
   logger.info("=======================");
   logger.info("");
 
-  const debugAppArgs = [stackName, config.stage, config.region];
+  const debugAppArgs = [
+    stackName,
+    config.stage,
+    config.region,
+    config.permissionsBoundary,
+  ];
   // Note: When deploying the debug stack, the current working directory is user's app.
   //       Setting the current working directory to debug stack cdk app directory to allow
   //       Lambda Function construct be able to reference code with relative path.

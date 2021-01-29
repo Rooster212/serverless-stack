@@ -4,6 +4,27 @@ const lambda = require("@aws-cdk/aws-lambda");
 const iam = require("@aws-cdk/aws-iam");
 const dynamodb = require("@aws-cdk/aws-dynamodb");
 
+class PermissionsBoundaryAspect extends cdk.Aspects {
+  permissionsBoundaryArn;
+
+  constructor(permissionBoundaryArn) {
+    super();
+    this.permissionsBoundaryArn = permissionBoundaryArn;
+  }
+
+  visit(node) {
+    if (
+      cdk.CfnResource.isCfnResource(node) &&
+      node.cfnResourceType === "AWS::IAM::Role"
+    ) {
+      node.addPropertyOverride(
+        "PermissionsBoundary",
+        this.permissionsBoundaryArn
+      );
+    }
+  }
+}
+
 class DebugStack extends cdk.Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
@@ -101,4 +122,4 @@ class DebugStack extends cdk.Stack {
   }
 }
 
-module.exports = { DebugStack };
+module.exports = { DebugStack, PermissionsBoundaryAspect };
