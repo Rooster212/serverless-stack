@@ -116,7 +116,8 @@ async function deployDebugStack(argv, cliInfo, config) {
     stackName,
     config.stage,
     config.region,
-    config.permissionsBoundary,
+    config.rolePermissionsBoundary,
+    config.rolePath,
   ];
   // Note: When deploying the debug stack, the current working directory is user's app.
   //       Setting the current working directory to debug stack cdk app directory to allow

@@ -4,34 +4,30 @@ const lambda = require("@aws-cdk/aws-lambda");
 const iam = require("@aws-cdk/aws-iam");
 const dynamodb = require("@aws-cdk/aws-dynamodb");
 
-class PermissionsBoundaryAspect extends cdk.Aspects {
-  permissionsBoundaryArn;
-
-  constructor(permissionBoundaryArn) {
-    super();
-    this.permissionsBoundaryArn = permissionBoundaryArn;
-  }
-
-  visit(node) {
-    if (
-      cdk.CfnResource.isCfnResource(node) &&
-      node.cfnResourceType === "AWS::IAM::Role"
-    ) {
-      node.addPropertyOverride(
-        "PermissionsBoundary",
-        this.permissionsBoundaryArn
-      );
-    }
-  }
-}
+const { RolePathAspect, RolePermissionsBoundaryAspect } = require("./aspects");
 
 class DebugStack extends cdk.Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
-    const { stage, region, stackName } = props;
-
+    const {
+      stage,
+      stackName,
+      region,
+      rolePermissionsBoundaryArn,
+      rolePath,
+    } = props;
     const _this = this;
+
+    if (rolePermissionsBoundaryArn) {
+      cdk.Aspects.of(this).add(
+        new RolePermissionsBoundaryAspect(rolePermissionsBoundaryArn)
+      );
+    }
+
+    if (rolePath) {
+      cdk.Aspects.of(this).add(new RolePathAspect(rolePath));
+    }
 
     // Create connection table
     const table = new dynamodb.Table(this, "Table", {
@@ -122,4 +118,4 @@ class DebugStack extends cdk.Stack {
   }
 }
 
-module.exports = { DebugStack, PermissionsBoundaryAspect };
+module.exports = { DebugStack };

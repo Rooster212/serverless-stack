@@ -1,29 +1,26 @@
 #!/usr/bin/env node
 
-const { Aspects } = require("@aws-cdk/core");
 const cdk = require("@aws-cdk/core");
-const { DebugStack, PermissionsBoundaryAspect } = require("../lib/DebugStack");
+const { DebugStack } = require("../lib/DebugStack");
 
 const stage = process.argv[3];
 const region = process.argv[4];
 const stackName = process.argv[2];
-const permissionsBoundaryArn = process.argv[5];
+const rolePermissionsBoundaryArn = process.argv[5];
+const rolePath = process.argv[6];
 
 // Override default region
 const env = { account: process.env.CDK_DEFAULT_ACCOUNT, region };
 
 const app = new cdk.App();
 
-const debugStack = new DebugStack(app, stackName, {
+console.warn(process.argv);
+
+new DebugStack(app, stackName, {
   env,
   stage,
   stackName,
   region,
+  rolePermissionsBoundaryArn,
+  rolePath,
 });
-
-if (permissionsBoundaryArn) {
-  const permissionsBoundaryAspect = new PermissionsBoundaryAspect(
-    permissionsBoundaryArn
-  );
-  Aspects.of(debugStack).add(permissionsBoundaryAspect);
-}
